@@ -9,4 +9,4 @@ Java-like string class for PHP
     echo $string->length(); //writes "9"
     echo $string->reverse(); //writes "gnirts yM"
 
-Full method overview available at wiki
+Full method overview available at [Wiki](https://github.com/r0ck3r/JString/wiki)
