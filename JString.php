@@ -3,8 +3,7 @@ class JString {
     private $str = "";
     
     public function __construct($string = null) {
-        $rawString = $this->getString($string);
-        $this->str = "".$rawString;
+        $this->str = $this->getString($string);
     }
         
     public function __toString() {
