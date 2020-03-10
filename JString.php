@@ -3,7 +3,8 @@ class JString {
     private $str = "";
     
     public function __construct($string = null) {
-        $this->str = $this->getString($string);
+        $rawString = $this->getString($string);
+        $this->str = "".$rawString;
     }
         
     public function __toString() {
@@ -108,6 +109,10 @@ class JString {
         return new JString(str_replace($this->getString($what), $this->getString($with), $this->str));
     }
     
+    public function replaceNewLines($with = null) {
+        return new JString( $this->replace("\r\n", $with)->replace("\r", $with)->replace("\n", $with) );
+    }
+    
     public function trim(){
         return new JString(trim($this->str));
     }
@@ -158,6 +163,14 @@ class JString {
         return $ret;
     }
     
+    public function splitPlain($string = null) {
+        $result = [];
+        $data = $this->split($string);
+        foreach ($data as $current) {
+            $result[] = $current . "";
+        }
+        return $result;
+    }
     
     public function htmlSpecialChars(){
         return new JString(htmlspecialchars($this->str));
@@ -173,6 +186,58 @@ class JString {
     
     public function stripSlashes(){
         return new JString(stripslashes($this->str));
+    }
+    
+    public function toCamelCase() {
+        $ret = $this->toLowerCase();
+        while(true) {
+            $i = $ret->indexOf("_");
+            if($i == -1) {
+                break;
+            }
+            $before = $ret->substring(0, $i);
+            $toUp = $i < $ret->length() - 1? $ret->charAt($i + 1)->toUpperCase() : "";
+            $after = $ret->substring($i + 2);
+            $ret = new JString($before . $toUp . $after);
+        }
+        return $ret;
+    }
+    
+    public function fromCamelCase() {
+        $ret = new JString();
+        $chars = $this->getChars();
+        foreach ($chars as $currentChar) {
+            if($currentChar->toLowerCase() == $currentChar) {
+                $ret->append($currentChar);
+            } else {
+                $ret->append("_")->append($currentChar->toLowerCase());
+            }
+        }
+        return $ret;
+    }
+    
+    public function trimTo($count) {
+        if ($count >= $this->length()) {
+            return new JString($this->str);
+        } else {
+            $tmpString = $this->substring(0, $count);
+            $index = $tmpString->lastIndexOf(" ");
+            return $this->substring(0, $index)->append(" ...");
+        }
+    }
+    
+    public function recursiveReplace($what, $to) {
+        $result = new JString($this);
+        if (!static::from($to)->contains($what)) {
+            while ($result->contains($what)) {
+                $result = $result->replace($what, $to);
+            }
+        }
+        return $result;
+    }
+    
+    public static function from($string) {
+        return new JString($string);
     }
 }
 ?>
